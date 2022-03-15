@@ -1,0 +1,13 @@
+{
+  "name": "gulp_lesson",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "安裝套件": "npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
