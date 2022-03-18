@@ -47,7 +47,10 @@ function minicss(){
     return src('src/*.css')
     .pipe(cleanCSS())
     .pipe(rename({
-        extname: '.min.css'
+        extname: '.min.css' //修改副檔名
+        // prefix: 'web-',  //前綴字
+        // suffix: '-min',  //後綴字
+        // basename: 'all'  //更名
     }))
     .pipe(dest('dist')) //*.css 所有css檔 打包到dist資料夾裡
 }
@@ -67,3 +70,45 @@ function minijs(){
 }
 
 exports.ugjs = minijs;
+
+//整合所有檔案
+const concat = require('gulp-concat');
+
+function concatall_css(){
+    return src('src/*.css')
+    .pipe(concat('all.css'))
+    .pipe(cleanCSS())
+    .pipe(dest('dist/css'));
+}
+
+exports.allcss = concatall_css;
+
+//saaa 編譯
+const sass = require('gulp-sass')(require('sass'));
+const sourcemaps = require('gulp-sourcemaps');
+
+function sassstyle() {
+    return src('./src/sass/*.scss')
+        .pipe(sourcemaps.init())
+        .pipe(sass.sync().on('error', sass.logError))
+        .pipe(cleanCSS()) //minify css
+        .pipe(sourcemaps.write())
+        .pipe(dest('./dist/css'));
+}
+
+exports.s = sassstyle;
+
+//合併html
+
+const fileinclude = require('gulp-file-include');
+
+function includeHTML(){
+    return src('src/*.html')
+        .pipe(fileinclude({
+            prefix: '@@',
+            basepath: 'src'
+        }))
+        .pipe(dest('./dist'));
+}
+
+exports.html = includeHTML;
