@@ -11,3 +11,5 @@ console.log(z);
 var i;
 i = 1;
 console.log(i);
+
+var a = x + y + z;

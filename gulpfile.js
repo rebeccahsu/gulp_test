@@ -112,3 +112,11 @@ function includeHTML(){
 }
 
 exports.html = includeHTML;
+
+function watchall(){
+    watch(['src/*.html', 'src/layout/*.html'], includeHTML);
+    watch(['src/sass/*.scss', 'src/sass/**/*.scss'], sassstyle); //sass底下所有資料夾的所有scss
+    watch('src/js/*.js', minijs);
+}
+
+exports.w = watchall;
