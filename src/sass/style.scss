@@ -7,3 +7,13 @@ body{
         color: red;
     }
 }
+
+.nav{
+    display: flex;
+    list-style: none;
+}
+
+.example{
+    transition: 1s all ease;
+    user-select: none;
+}

@@ -13,3 +13,7 @@ i = 1;
 console.log(i);
 
 var a = x + y + z;
+
+const person =(someone) => {
+    return someone + '上課了'
+}

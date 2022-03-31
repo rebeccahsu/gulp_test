@@ -86,12 +86,16 @@ exports.allcss = concatall_css;
 //saaa 編譯
 const sass = require('gulp-sass')(require('sass'));
 const sourcemaps = require('gulp-sourcemaps');
+const autoprefixer = require('gulp-autoprefixer');
 
 function sassstyle() {
     return src('./src/sass/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass.sync().on('error', sass.logError))
-        .pipe(cleanCSS()) //minify css
+        // .pipe(cleanCSS()) //minify css
+        .pipe(autoprefixer({
+            cascade: false
+        }))
         .pipe(sourcemaps.write())
         .pipe(dest('./dist/css'));
 }
@@ -120,3 +124,80 @@ function watchall(){
 }
 
 exports.w = watchall;
+
+// 清除舊檔案
+const clean = require('gulp-clean');
+
+function clear() {
+  return src('dist' ,{ read: false ,allowEmpty: true })//不去讀檔案結構，增加刪除效率  / allowEmpty : 允許刪除空的檔案
+  .pipe(clean({force: true})); //強制刪除檔案 
+}
+
+exports.cls = clear;
+
+//瀏覽器同步
+const browserSync = require('browser-sync');
+const reload = browserSync.reload;
+
+
+function browser(done) {
+    browserSync.init({
+        server: {
+            baseDir: "./dist",
+            index: "index.html"
+        },
+        port: 3000
+    });
+
+    watch(['src/*.html', 'src/layout/*.html'], includeHTML).on('change', reload);
+    watch(['src/sass/*.scss', 'src/sass/**/*.scss'], sassstyle).on('change', reload); //sass底下所有資料夾的所有scss
+    watch('src/js/*.js', minijs).on('change', reload);
+    done();
+}
+
+//解決跨瀏覽器問題
+
+function auto_css(){
+    return src('src/css/main.css')
+    .pipe(autoprefixer({
+        cascade: false
+    })).pipe(dest('dist'));
+}
+
+exports.autoprefix = auto_css
+
+
+// 圖片壓縮
+const imagemin = require('gulp-imagemin');
+
+function min_images(){
+    return src('src/img/*.*')
+    .pipe(imagemin([
+        imagemin.mozjpeg({quality: 60, progressive: true}) // 壓縮品質      quality越低 -> 壓縮越大 -> 品質越差 
+    ]))
+    .pipe(dest('dist/images'))
+}
+
+exports.mini_img = min_images;
+
+// js 瀏覽器適應
+const babel = require('gulp-babel');
+
+function babel5() {
+    return src('src/js/*.js')
+        .pipe(babel({
+            presets: ['@babel/env']
+        }))
+        .pipe(uglify())
+        .pipe(dest('dist/js'));
+}
+
+exports.es5 = babel5;
+
+
+
+//開發用
+exports.default = series (clear,  parallel(includeHTML, sassstyle, minijs), browser);
+
+//上線
+exports.online = series(clear, parallel(includeHTML, sassstyle, babel5, min_images));
